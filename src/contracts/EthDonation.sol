@@ -9,25 +9,27 @@ contract EthDonation {
         address donee;
         uint itemId;
         string itemName;
+        uint initialRequired;
         uint amount;
+        uint claimed;
         uint transporting;
-        uint recieved;
+        uint received;
         bool isAcceptable;
     }
     struct Donation {
-        uint denoteNo;
-        address doner;
+        uint donateNo;
+        address donor;
         uint serialNo;
         uint amount;
         string itemName;
         string trackingNo;
-        uint status;    // 0--confirm, 1--transporting, 2--received, 3--overtime cancel due, 4--doner cancel
+        uint status;    // 0--claimed, 1--transporting, 2--received, 3--overtime cancel due, 4--donor cancel
     }
     
     mapping(uint => Item) public items;
     mapping(address => uint[]) private donees;
     mapping(uint => Donation) public donations;
-    mapping(address => uint[]) private doners;
+    mapping(address => uint[]) private donors;
     
 
     Item[] public itemRecord;
@@ -40,14 +42,15 @@ contract EthDonation {
         uint itemId,
         string itemName,
         uint amount,
+        uint claimed,
         uint transporting,
-        uint recieved,
+        uint received,
         bool isAcceptable
     );
         
     event updateDonation(
         uint donateNo,
-        address doner,
+        address donor,
         uint serialNo,
         uint amount,
         string itemName,
@@ -56,8 +59,10 @@ contract EthDonation {
     );
 
     constructor() public {
-        storeName = "Emergency Resource Donation Platform";
+        storeName = "Emergency Resources Donation Platform";
     }
+
+
 
     function createItem(string memory _itemName, uint _amount) public {
         require(bytes(_itemName).length > 0, "Item's name is required");
@@ -68,9 +73,11 @@ contract EthDonation {
         _item.donee = msg.sender;
         _item.itemId = 0;
         _item.itemName = _itemName;
+        _item.initialRequired = _amount;
         _item.amount = _amount;
         _item.transporting = 0;
-        _item.recieved = 0;
+        _item.received = 0;
+        _item.claimed = 0;
         _item.isAcceptable = true;
         items[sn] = _item;
         
@@ -82,8 +89,9 @@ contract EthDonation {
             _item.itemId,
             _item.itemName,
             _item.amount,
+            _item.claimed,
             _item.transporting,
-            _item.recieved,
+            _item.received,
             _item.isAcceptable
         );
     }
@@ -92,25 +100,26 @@ contract EthDonation {
         Item memory _item = items[_serialNo];
         require(_item.serialNo > 0 && _item.serialNo <= sn, 'Item should be in donation');
         require(_amount > 0, "Item's amount is required");
-        require(_item.transporting + _item.recieved < _item.amount, 'Item is enough temporarily');
+        require(_item.transporting + _item.received +_item.claimed< _item.amount, 'Item is enough temporarily');
         require(_item.isAcceptable, 'This donation is end');
-        require(msg.sender != _item.donee, 'cannot donate self');
+        require(msg.sender != _item.donee, 'cannot donate to the same address');
         dn++;
         Donation memory _donation;
-        _donation.denoteNo = dn;
-        _donation.doner = msg.sender;
+        _donation.donateNo = dn;
+        _donation.donor = msg.sender;
         _donation.serialNo = _serialNo;
         
-        if(_item.amount - _item.transporting - _item.recieved >  _amount) _donation.amount = _amount;
-        else _donation.amount = _item.amount - _item.transporting - _item.recieved;
+        if(_item.amount - _item.transporting - _item.received - _item.claimed>  _amount) _donation.amount = _amount;
+        else _donation.amount = _item.amount - _item.transporting - _item.received-_item.claimed;
         _donation.itemName = _item.itemName;
         _donation.trackingNo = '';
         _donation.status = 0;
         donations[dn] = _donation;
         
-        doners[msg.sender].push(dn);
+        donors[msg.sender].push(dn);
 
-        items[_serialNo].transporting += _donation.amount;
+        items[_serialNo].claimed += _donation.amount;
+        items[_serialNo].amount -= _donation.amount;
 
         //Trigger an event
         emit updateItem(
@@ -119,14 +128,15 @@ contract EthDonation {
             _item.itemId,
             _item.itemName,
             _item.amount,
+            _item.claimed,
             _item.transporting,
-            _item.recieved,
+            _item.received,
             _item.isAcceptable
         );
 
         emit updateDonation(
-            _donation.denoteNo,
-            _donation.doner,
+            _donation.donateNo,
+            _donation.donor,
             _donation.serialNo,
             _donation.amount,
             _donation.itemName,
@@ -136,51 +146,53 @@ contract EthDonation {
 
     }
     
-    function transportItem(uint _denoteNo, string memory _trackingNo) public {
-        require(_denoteNo > 0 && _denoteNo <= dn, 'donation not exsit');
-        require(donations[_denoteNo].status == 0, 'item should been confirm');
-        uint _serialNo = donations[_denoteNo].serialNo;
+    function transportItem(uint _donateNo, string memory _trackingNo) public {
+        require(_donateNo > 0 && _donateNo <= dn, 'donation not exsit');
+        require(donations[_donateNo].status == 0, 'item should been confirm');
+        uint _serialNo = donations[_donateNo].serialNo;
         
         require(_serialNo > 0 && _serialNo <= sn, 'Item should be in donation');
         require(items[_serialNo].serialNo == _serialNo, 'serialNo not match');
-        require(msg.sender == donations[_denoteNo].doner, 'should be signed by donee');
+        require(msg.sender == donations[_donateNo].donor, 'should be signed by donee');
 
-        donations[_denoteNo].status = 1;
-        donations[_denoteNo].trackingNo = _trackingNo;
+        donations[_donateNo].status = 1;
+        donations[_donateNo].trackingNo = _trackingNo;
+        items[_serialNo].transporting +=donations[_donateNo].amount;
+        if(items[_serialNo].received+ items[_serialNo].transporting >= items[_serialNo].initialRequired) items[_serialNo].isAcceptable = false;
         //Trigger an event
         emit updateDonation(
-            donations[_denoteNo].denoteNo,
-            donations[_denoteNo].doner,
-            donations[_denoteNo].serialNo,
-            donations[_denoteNo].amount,
-            donations[_denoteNo].itemName,
-            donations[_denoteNo].trackingNo,
-            donations[_denoteNo].status
+            donations[_donateNo].donateNo,
+            donations[_donateNo].donor,
+            donations[_donateNo].serialNo,
+            donations[_donateNo].amount,
+            donations[_donateNo].itemName,
+            donations[_donateNo].trackingNo,
+            donations[_donateNo].status
         );
     }
 
-    function receiveItem(uint _denoteNo) public {
-        require(_denoteNo > 0 && _denoteNo <= dn, 'donation not exsit');
-        require(donations[_denoteNo].status == 1, 'item should been tranporting');
-        uint _serialNo = donations[_denoteNo].serialNo;
+    function receiveItem(uint _donateNo) public {
+        require(_donateNo > 0 && _donateNo <= dn, 'donation not exsit');
+        require(donations[_donateNo].status == 1, 'item should been tranporting');
+        uint _serialNo = donations[_donateNo].serialNo;
         
         require(_serialNo > 0 && _serialNo <= sn, 'Item should be in donation');
         require(items[_serialNo].serialNo == _serialNo, 'serialNo not match');
         require(msg.sender == items[_serialNo].donee, 'should be signed by donee');
 
-        donations[_denoteNo].status = 2;
-        items[_serialNo].transporting -= donations[_denoteNo].amount;
-        items[_serialNo].recieved += donations[_denoteNo].amount;
-        if(items[_serialNo].recieved+ items[_serialNo].transporting >= items[_serialNo].amount) items[_serialNo].isAcceptable = false;
+        donations[_donateNo].status = 2;
+        items[_serialNo].transporting -= donations[_donateNo].amount;
+        items[_serialNo].received += donations[_donateNo].amount;
+        if(items[_serialNo].received+ items[_serialNo].transporting >= items[_serialNo].initialRequired) items[_serialNo].isAcceptable = false;
         //Trigger an event
         emit updateDonation(
-            donations[_denoteNo].denoteNo,
-            donations[_denoteNo].doner,
-            donations[_denoteNo].serialNo,
-            donations[_denoteNo].amount,
-            donations[_denoteNo].itemName,
-            donations[_denoteNo].trackingNo,
-            donations[_denoteNo].status
+            donations[_donateNo].donateNo,
+            donations[_donateNo].donor,
+            donations[_donateNo].serialNo,
+            donations[_donateNo].amount,
+            donations[_donateNo].itemName,
+            donations[_donateNo].trackingNo,
+            donations[_donateNo].status
         );
 
         emit updateItem(
@@ -189,40 +201,40 @@ contract EthDonation {
             items[_serialNo].itemId,
             items[_serialNo].itemName,
             items[_serialNo].amount,
+            items[_serialNo].claimed,
             items[_serialNo].transporting,
-            items[_serialNo].recieved,
+            items[_serialNo].received,
             items[_serialNo].isAcceptable
         );
 
         itemRecord.push(items[_serialNo]);
-        donationRecord.push(donations[_denoteNo]);
+        donationRecord.push(donations[_donateNo]);
 
 
     }
 
-    function cancelDonation(uint _denoteNo) public {
-        require(_denoteNo > 0 && _denoteNo <= dn, 'donation not exsit');
-        require(donations[_denoteNo].status == 0, 'item cannot canceel');
-        uint _serialNo = donations[_denoteNo].serialNo;
+    function cancelDonation(uint _donateNo) public {
+        require(_donateNo > 0 && _donateNo <= dn, 'donation not exsit');
+        require(donations[_donateNo].status == 0, 'item cannot cancel if shipped');
+        uint _serialNo = donations[_donateNo].serialNo;
         
         require(_serialNo > 0 && _serialNo <= sn, 'Item should be in donation');
         require(items[_serialNo].serialNo == _serialNo, 'serialNo not match');
-        require(msg.sender == donations[_denoteNo].doner, 'should be cancelled by oneself');
+        require(msg.sender == donations[_donateNo].donor, 'should be cancelled by oneself');
 
-        donations[_denoteNo].status = 4;
-        items[_serialNo].transporting -= donations[_denoteNo].amount;
-        if(items[_serialNo].recieved + items[_serialNo].transporting >= items[_serialNo].amount) items[_serialNo].isAcceptable = false;
+        donations[_donateNo].status = 4;
+        items[_serialNo].claimed -= donations[_donateNo].amount;
     
         
         //Trigger an event
         emit updateDonation(
-            donations[_denoteNo].denoteNo,
-            donations[_denoteNo].doner,
-            donations[_denoteNo].serialNo,
-            donations[_denoteNo].amount,
-            donations[_denoteNo].itemName,
-            donations[_denoteNo].trackingNo,
-            donations[_denoteNo].status
+            donations[_donateNo].donateNo,
+            donations[_donateNo].donor,
+            donations[_donateNo].serialNo,
+            donations[_donateNo].amount,
+            donations[_donateNo].itemName,
+            donations[_donateNo].trackingNo,
+            donations[_donateNo].status
         );
         emit updateItem(
             items[_serialNo].serialNo,
@@ -230,8 +242,9 @@ contract EthDonation {
             items[_serialNo].itemId,
             items[_serialNo].itemName,
             items[_serialNo].amount,
+            items[_serialNo].claimed,
             items[_serialNo].transporting,
-            items[_serialNo].recieved,
+            items[_serialNo].received,
             items[_serialNo].isAcceptable
         );
 
@@ -252,8 +265,9 @@ contract EthDonation {
             items[_serialNo].itemId,
             items[_serialNo].itemName,
             items[_serialNo].amount,
+            items[_serialNo].claimed,
             items[_serialNo].transporting,
-            items[_serialNo].recieved,
+            items[_serialNo].received,
             items[_serialNo].isAcceptable
         );
 
@@ -264,39 +278,39 @@ contract EthDonation {
         return donees[_donee];
     }
 
-    function listDonateNo(address _doner) public view returns (uint[] memory) {
-        return doners[_doner];
+    function listDonateNo(address _donor) public view returns (uint[] memory) {
+        return donors[_donor];
     }
     // function itemRecords() public view returns() {
     //     return itemRecord;
     // }
-    function doneeRecord(uint _serialNo) public view returns (uint serialNo, string memory itemName, uint amount, uint transporting, uint recieved, bool isAcceptable) {
+    function doneeRecord(uint _serialNo) public view returns (uint serialNo, string memory itemName, uint amount, uint transporting, uint received, bool isAcceptable) {
         require(_serialNo > 0 && _serialNo <= sn, 'Item should be in donation');
         string memory _itemName;
         uint _amount;
         uint _transporting;
-        uint _recieved;
+        uint _received;
         bool _isAcceptable;
         require(_serialNo ==  items[_serialNo].serialNo, 'Item sn not match');
         _itemName = items[_serialNo].itemName;
         _amount = items[_serialNo].amount;
         _transporting = items[_serialNo].transporting;
-        _recieved = items[_serialNo].recieved;
+        _received = items[_serialNo].received;
         _isAcceptable = items[_serialNo].isAcceptable;
         //return Item[_serialNo];
-        return (_serialNo, _itemName, _amount, _transporting, _recieved, _isAcceptable);
+        return (_serialNo, _itemName, _amount, _transporting, _received, _isAcceptable);
     }
     // function donationRecords() public view{
     //     return donationRecord;
     // }
     
-    function donerRecord(uint _donateNo) public view returns (uint denoteNo, uint serialNo, string memory itemName, uint amount, uint status) {
+    function donorRecord(uint _donateNo) public view returns (uint donateNo, uint serialNo, string memory itemName, uint amount, uint status) {
         require(_donateNo > 0 && _donateNo <= dn, 'donation num out of range');
         uint _serialNo;
         string memory _itemName;
         uint _amount;
         uint _status;
-        require(_donateNo == donations[_donateNo].denoteNo, 'donation sn not match');
+        require(_donateNo == donations[_donateNo].donateNo, 'donation sn not match');
         _serialNo = donations[_donateNo].serialNo;
         _itemName = donations[_donateNo].itemName;
         _amount = donations[_donateNo].amount;

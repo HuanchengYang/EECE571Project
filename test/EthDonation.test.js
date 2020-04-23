@@ -19,7 +19,7 @@ contract(EthDonation, ([donee, doner1, doner2]) => {
 
         it('The deployed smart contract has the correct name', async() => {
             const name = await ethdonation.storeName();
-            assert.equal(name, 'Emergency Resource Donation Platform')
+            assert.equal(name, 'Emergency Resources Donation Platform')
         })
     })
 
@@ -40,7 +40,7 @@ contract(EthDonation, ([donee, doner1, doner2]) => {
             assert.equal(event.itemName, 'N95 mask', 'item name is correct');
             assert.equal(event.amount.toNumber(), 100, 'amount is correct');
             assert.equal(event.transporting.toNumber(), 0, 'transporting is correct');
-            assert.equal(event.recieved.toNumber(), 0, 'recieved is correct');
+            assert.equal(event.received.toNumber(), 0, 'received is correct');
             assert.equal(event.isAcceptable, true, 'isAcceptable is correct');
         })
 
@@ -72,14 +72,14 @@ contract(EthDonation, ([donee, doner1, doner2]) => {
             donateNumber = await ethdonation.dn()
         })
 
-        it('Makeing donation should be failed if either wrong serialNo or no amount', async() => {
+        it('Making donation should be failed if either wrong serialNo or no amount', async() => {
             //Product must have correct serialNo
             await ethdonation.donateItem(serialNumber, 0, { from: doner1 }).should.be.rejected;
             //amount must be greater than 0
             await ethdonation.donateItem(serialNumber + 1, 10, { from: doner1 }).should.be.rejected;
         })
 
-        it('Makeing donation should be failed if donation amount is full', async() => {
+        it('Making donation should be failed if donation amount is full', async() => {
             await ethdonation.donateItem(serialNumber, 100, { from: doner1 });
             //amount is full
             await ethdonation.donateItem(serialNumber, 10, { from: doner1 }).should.be.rejected;
@@ -93,7 +93,7 @@ contract(EthDonation, ([donee, doner1, doner2]) => {
         })
     })
 
-    describe('Transporting and confirm recieved', async() => {
+    describe('Transporting and confirm received', async() => {
         let result, serialNumber, donateNumber
 
         before(async() => {
@@ -101,6 +101,8 @@ contract(EthDonation, ([donee, doner1, doner2]) => {
             serialNumber = await ethdonation.sn()
             await ethdonation.donateItem(serialNumber, 10, { from: doner1 })
             donateNumber = await ethdonation.dn()
+            result = await ethdonation.transportItem(donateNumber, 'DHL0001', { from: doner1 });
+
         })
 
         it('Person who is not the doner can not change the donation status to transporting', async() => {
@@ -108,8 +110,25 @@ contract(EthDonation, ([donee, doner1, doner2]) => {
         })
 
         it('Only the doner can change his donation status to transporting', async() => {
-            await ethdonation.transportItem(donateNumber, 'DHL0001', { from: doner1 });
+            await ethdonation.transportItem(donateNumber, 'DHL0001', { from: donee }).should.be.rejected;
         })
+
+        it('Transporting donation should be successful if all correct', async() => {
+            //SUCCESSFUL
+            const event = result.logs[0].args;
+            assert.equal(event.donateNo.toNumber, donateNumber.toNumber, 'donation Number should be correct');
+            assert.equal(event.donor, doner1, 'donor is correct');
+            assert.equal(event.serialNo.toNumber(), serialNumber.toNumber(), 'serialNo is correct');
+            assert.equal(event.amount.toNumber(), 10, 'amount is correct');
+            assert.equal(event.itemName, 'N95 mask', 'item name is correct');
+            assert.equal(event.trackingNo, 'DHL0001', 'transporting is correct');
+            assert.equal(event.status, 1, 'transporting status is correct');
+        })
+
+
+
+
+
 
         it('Person who is not the donee can not comfirm the donation to him is recieved ', async() => {
             await ethdonation.receiveItem(donateNumber, { from: doner2 }).should.be.rejected;
@@ -118,6 +137,7 @@ contract(EthDonation, ([donee, doner1, doner2]) => {
         it('Only the donee can comfirm the donation to him is recieved', async() => {
             await ethdonation.receiveItem(donateNumber, { from: donee });
         })
+
     })
 
 });
