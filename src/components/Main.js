@@ -55,6 +55,7 @@ class Main extends Component {
             <th scope="col">#</th>
             <th scope="col">Item Name</th>
             <th scope="col">Required Amount</th>
+            <th scope="col">claimed Amount</th>
             <th scope="col">Transporting Amount</th>
             <th scope="col">Owner Address</th>
             <th scope="col">Donate Amount</th>
@@ -69,6 +70,7 @@ class Main extends Component {
                     <th scope="row">{item.serialNo.toString()}</th>   
                     <td>{item.itemName}</td> 
                     <td>{item.amount.toString()} </td>
+                    <td>{item.claimed.toString()}</td>
                     <td>{item.transporting.toString()}</td>
                     <td>{item.donee}</td>
                     <td>{
