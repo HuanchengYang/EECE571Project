@@ -71,6 +71,10 @@ contract MoneyDonation {
         return donationCampaignName;
     }
 
+    function getCampaignCreatorAddress() public view returns (address)  {
+        return creator;
+    }
+
     function updateCampaignName(string memory _Name) public returns (bool) {
         donationCampaignName = _Name;
         return true;

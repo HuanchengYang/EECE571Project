@@ -36,6 +36,7 @@ constructor() public {
 
   function newMoneyDonation(string memory _donationCampaignName,string memory _Description,uint _requiredAmount) public
   {
+    require (campaigns[msg.sender] == MoneyDonation(0),"Campaign should not be initialized");
     MoneyDonation md = new MoneyDonation(_donationCampaignName,_Description,_requiredAmount);
     totalCampaign = totalCampaign+1;
     campaigns[msg.sender] = md;
