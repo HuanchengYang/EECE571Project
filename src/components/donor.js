@@ -12,9 +12,7 @@ class Donor extends Component {
   render() {
     return(
         <div class='donor ' >
-            <h1>donor</h1>
-            
-
+        <h1>donor</h1>
         <h2>Update Tracking No.</h2>
         <form onSubmit = 
           {async (event) => {
