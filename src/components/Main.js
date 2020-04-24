@@ -11,7 +11,8 @@ class Main extends Component {
 
   render() {
     return (
-      <div id="content">
+      <div id="content " >
+
         <h2>Add Item</h2>
         <form onSubmit = 
           {async (event) => {
@@ -20,6 +21,7 @@ class Main extends Component {
             const amount = this.amount.value;
             await this.props.createItem(itemName, amount)}
           }>
+            
         <div className="form-group mr-sm-2">
             <input 
             id="itemName"
@@ -29,6 +31,8 @@ class Main extends Component {
             placeholder="Item Name"
             required/>
         </div>
+        
+
         <div className="form-group mr-sm-2">
             <input 
             id="amount"
@@ -39,6 +43,8 @@ class Main extends Component {
             required/>
         </div>
         <button type="submit" className="btn btn-primary">Add Item</button>
+        </form>
+
         <h2>Update Tracking No.</h2>
         <form onSubmit = 
           {async (event) => {
@@ -57,8 +63,20 @@ class Main extends Component {
             placeholder="Donate No."
             required/>
         </div>
+        
 
+        <div className="form-group mr-sm-2">
+            <input 
+            id="trackingNo"
+            type="text"
+            ref={(input)=>{this.trackingNo=input}}
+            className="form-control"
+            placeholder="tracking No"
+            required/>
+        </div>
+        <button type="submit" className="btn btn-primary">Confirm</button>
         </form>
+
         <p>&nbsp;</p>
         <h2>Donate Item</h2>
         <table className="table">

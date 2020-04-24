@@ -4,7 +4,10 @@ import logo from '../logo.png';
 import './App.css';
 import EthDonation from '../abis/EthDonation'
 import Addressbar from './Addressbar'
-import Main from './Main'
+import Main from './main'
+import {Route, Switch } from 'react-router-dom';
+import Donor from './donor'
+import Donee from './donee'
 
 class App extends Component {
     state = {
@@ -108,17 +111,28 @@ class App extends Component {
         <div>
           <Addressbar account={this.state.account}/>
           <div className="container-fluid mt-5">
-            <div className="row">
+            <div className="row ">
               <main>
                 { this.state.loading 
                   ? 
                     <div><p className="text-center">Loading ...</p></div> 
                   : 
 
+                  <Switch>
+                  <Route exact path="/">
                     <Main items = {this.state.items} 
                           createItem = {this.createItem}
                           donateItem = {this.donateItem}
-                    />}
+                    />
+                  </Route>
+                  <Route path="/donor" component={Donor}>
+                  </Route>
+                  <Route path="/donee" component={Donee}>
+                  </Route>
+                  </Switch>
+
+                   }
+
               </main>
             </div>
           </div>
