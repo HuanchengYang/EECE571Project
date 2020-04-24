@@ -72,7 +72,7 @@ class Donee extends Component {
           {async (event) => {
             event.preventDefault();
             const serialNo = this.serialNo.value
-            await this.props.transportItem(serialNo)}
+            await this.props.endDonation(serialNo)}
           }>
             
         <div className="form-group mr-sm-2">
@@ -81,7 +81,7 @@ class Donee extends Component {
             type="number"
             ref={(input)=>{this.serialNo=input}}
             className="form-control"
-            placeholder="Donate No."
+            placeholder="Serial No."
             required/>
         </div>
         
