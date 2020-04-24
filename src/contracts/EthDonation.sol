@@ -157,7 +157,7 @@ contract EthDonation {
 
         donations[_donateNo].status = 1;
         donations[_donateNo].trackingNo = _trackingNo;
-        items[_serialNo].transporting +=donations[_donateNo].amount;
+        items[_serialNo].transporting += donations[_donateNo].amount;
         if(items[_serialNo].received+ items[_serialNo].transporting >= items[_serialNo].initialRequired) items[_serialNo].isAcceptable = false;
         //Trigger an event
         emit updateDonation(

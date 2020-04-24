@@ -46,20 +46,20 @@ contract MoneyDonation {
         bool isApproved
     );
 
-    constructor() public {
-        donationCampaignName = '';
-        description = '';
-        requiredAmount = 0;
+    constructor(string memory _donationCampaignName,string memory _Description,uint _requiredAmount) public {
+        donationCampaignName = _donationCampaignName;
+        description = _Description;
+        requiredAmount = _requiredAmount;
         creator = msg.sender;
     }
 
     function updateDescription(string memory _Description) public returns (bool) {
-        description =_Description;
+        description = _Description;
         return true;
     }
 
     function updateRequiredAmount(uint _requiredAmount) public returns (bool) {
-        requiredAmount =_requiredAmount;
+        requiredAmount = _requiredAmount;
         return true;
     }
 
