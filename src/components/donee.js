@@ -44,7 +44,8 @@ class Donee extends Component {
         </div>
         <button type="submit" className="btn btn-primary">Add Item</button>
         </form>
-            <h2>receiveItem</h2>
+        <p>&nbsp;</p>
+        <h2>Receive Item</h2>
         <form onSubmit = 
           {async (event) => {
             event.preventDefault();
@@ -65,8 +66,8 @@ class Donee extends Component {
         <button type="submit" className="btn btn-primary">Confirm</button>
         </form>
 
-
-        <h2>end Donation</h2>
+        <p>&nbsp;</p>
+        <h2>End Donation</h2>
         <form onSubmit = 
           {async (event) => {
             event.preventDefault();
@@ -89,7 +90,7 @@ class Donee extends Component {
         </form>
 
         <p>&nbsp;</p>
-        <h2>list of Donation</h2>
+        <h2>List of Donation</h2>
         <table className="table">
           
         <thead id="itemList">

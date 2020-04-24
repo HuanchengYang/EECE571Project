@@ -44,7 +44,7 @@ class Main extends Component {
         </div>
         <button type="submit" className="btn btn-primary">Add Item</button>
         </form>
-
+        <p>&nbsp;</p>
         <h2>donation record</h2>
             <form onSubmit = 
           {async (event) => {

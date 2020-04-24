@@ -46,7 +46,7 @@ class Donor extends Component {
         </div>
         <button type="submit" className="btn btn-primary">Confirm</button>
         </form>
-
+        <p>&nbsp;</p>
         <h2>Cancel Donation</h2>
         <form onSubmit = 
           {async (event) => {
