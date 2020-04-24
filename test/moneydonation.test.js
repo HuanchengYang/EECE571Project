@@ -1,11 +1,12 @@
 const MoneyDonationPlatform = artifacts.require("MoneyDonationPlatform");
+
 require('chai')
     .use(require('chai-as-promised'))
     .should();
 
 
 contract(MoneyDonationPlatform, ([deployer, donator, vendor]) => {
-    let mdplatform;
+    let mdplatform,mdplatformaddress;
     before(async () => {
         mdplatform = await MoneyDonationPlatform.deployed()
     })
@@ -16,6 +17,7 @@ contract(MoneyDonationPlatform, ([deployer, donator, vendor]) => {
             assert.notEqual(address, '')
             assert.notEqual(address, null)
             assert.notEqual(address, undefined)
+            mdplatformaddress=address
             
         })
 
@@ -65,6 +67,15 @@ contract(MoneyDonationPlatform, ([deployer, donator, vendor]) => {
             
             assert.equal(name, 'Harry')
             assert.equal(address,mdcontract.options.address)
+
+            var jsonFile2 = "./src/abis/moneyDonationPlatform.json";
+            var parsed2= JSON.parse(fs.readFileSync(jsonFile2));
+            var abi2 = parsed2.abi;
+
+            mdplatform=new web3.eth.Contract(abi2, mdplatformaddress);
+
+            var number = await mdplatform.methods.getNumofCampaigns().call();
+            console.log(number);
             
         })
     })

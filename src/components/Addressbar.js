@@ -13,6 +13,7 @@ class Addressbar extends Component {
         <Link to="/">Home</Link>
         <Link to="/Donor">Donor</Link>
         <Link to="/Donee">Donee</Link>
+        <Link to="/MoneyDonation">MoneyDonation</Link>
 
     </nav>
    
