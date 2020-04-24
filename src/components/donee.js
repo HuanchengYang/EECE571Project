@@ -98,8 +98,8 @@ class Donee extends Component {
             <th scope="col">#</th>
             <th scope="col">Item Name</th>
             <th scope="col">Required Amount</th>
-            <th scope="col">received Amount</th>
-            <th scope="col">claimed Amount</th>
+            <th scope="col">Received Amount</th>
+            <th scope="col">Claimed Amount</th>
             <th scope="col">Transporting Amount</th>
             <th scope="col">Donee Address</th>
            

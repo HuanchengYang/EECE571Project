@@ -75,13 +75,13 @@ class Donor extends Component {
           
         <thead className="donationList">
           <tr>
-            <th scope="col">donation #</th>
-            <th scope="col">serial #</th>
-            <th scope="col">item name</th>
-            <th scope="col">donor address</th>
-            <th scope="col">donation amount</th>
-            <th scope="col">tracking #</th>
-            <th scope="col">status</th>
+            <th scope="col">Donation #</th>
+            <th scope="col">Serial #</th>
+            <th scope="col">Item name</th>
+            <th scope="col">Donor address</th>
+            <th scope="col">Donation amount</th>
+            <th scope="col">Tracking #</th>
+            <th scope="col">Status</th>
           </tr> 
         </thead>
         <tbody className="contractList">

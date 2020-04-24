@@ -12,7 +12,7 @@ class Main extends Component {
   render() {
     return (
       <div id="content " >
-
+        <h1>Home</h1>
         <h2>Add Item</h2>
         <form onSubmit = 
           {async (event) => {
@@ -44,8 +44,8 @@ class Main extends Component {
         </div>
         <button type="submit" className="btn btn-primary">Add Item</button>
         </form>
-        <p>&nbsp;</p>
-        <h2>donation record</h2>
+        {/* <p>&nbsp;</p>
+        <h2>Donation Record</h2>
             <form onSubmit = 
           {async (event) => {
             event.preventDefault();
@@ -63,7 +63,7 @@ class Main extends Component {
             required/>
         </div>
         <button type="submit" className="btn btn-primary">Confirm</button>
-        </form>
+        </form> */}
 
       
         <p>&nbsp;</p>
@@ -72,10 +72,10 @@ class Main extends Component {
           
         <thead id="itemList">
           <tr>
-            <th scope="col">#</th>
+            <th scope="col">Serial #</th>
             <th scope="col">Item Name</th>
             <th scope="col">Required Amount</th>
-            <th scope="col">claimed Amount</th>
+            <th scope="col">Claimed Amount</th>
             <th scope="col">Transporting Amount</th>
             <th scope="col">Owner Address</th>
             <th scope="col">Donate Amount</th>
