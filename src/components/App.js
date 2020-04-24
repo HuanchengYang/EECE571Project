@@ -15,6 +15,7 @@ class App extends Component {
     doneeaccount: '',
     totalNumber: 0,
     items: [],
+    donations:[],
     loading: true
 
   }
@@ -49,17 +50,38 @@ class App extends Component {
       const deployedEthDonation = new web3.eth.Contract(EthDonation.abi, networkData.address);
       //const contractNum = await deployedEthDonation.methods.getNumofCampaigns().call();
       this.setState({ deployedEthDonation: deployedEthDonation });
+
+      //items
       const serialNumber = await deployedEthDonation.methods.sn().call();
       console.log(serialNumber);
       this.setState({ serialNumber })
+
       for (var i = 1; i <= serialNumber; i++) {
         const item = await deployedEthDonation.methods.items(i).call();
         this.setState({
           items: [...this.state.items, item]
         });
       }
+  
+
+
+      //donations
+      const donateNumber = await deployedEthDonation.methods.dn().call()
+      console.log(donateNumber);
+      this.setState({ donateNumber })
+      for (var j = 1; j <= donateNumber; j++) {
+        const donation = await deployedEthDonation.methods.donations(j).call();
+        this.setState({
+          donations: [...this.state.donations, donation]
+        });
+      }
+
       this.setState({ loading: false })
       console.log(this.state.items)
+      console.log(this.state.donations)
+
+
+      
 
     } else {
       window.alert('EthDonation contract is not found in your blockchain.')
@@ -324,6 +346,7 @@ class App extends Component {
                 <Switch>
                   <Route exact path="/">
                     <Main items={this.state.items}
+                      donations={this.state.donations}
                       createItem={this.createItem}
                       donateItem={this.donateItem}
                       transportItem={this.transportItem}
@@ -343,6 +366,7 @@ class App extends Component {
                       <Donor
                       contracts={this.state.deployedEthDonation}
                       items={this.state.items}
+                      donations={this.state.donations}
                       createItem={this.createItem}
                       donateItem={this.donateItem}
                       transportItem={this.transportItem}

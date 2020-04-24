@@ -13,25 +13,7 @@ class Donor extends Component {
     return(
         <div class='donor ' >
             <h1>donor</h1>
-            <h2>donation record</h2>
-            <form onSubmit = 
-          {async (event) => {
-            event.preventDefault();
-            const donateNo = this.listDonateNo.value
-            await this.props.transportItem(donateNo)}
-          }>
             
-        <div className="form-group mr-sm-2">
-            <input 
-            id="donateNo"
-            type="number"
-            ref={(input)=>{this.donateNo=input}}
-            className="form-control"
-            placeholder="Donate No."
-            required/>
-        </div>
-        <button type="submit" className="btn btn-primary">Confirm</button>
-        </form>
 
         <h2>Update Tracking No.</h2>
         <form onSubmit = 
@@ -94,30 +76,57 @@ class Donor extends Component {
         <thead className="donationList">
           <tr>
             <th scope="col">donation #</th>
-            
-            <th scope="col">donor address</th>
             <th scope="col">serial #</th>
+            <th scope="col">item name</th>
+            <th scope="col">donor address</th>
             <th scope="col">donation amount</th>
-            <th scope="col">item amount</th>
             <th scope="col">tracking #</th>
             <th scope="col">status</th>
           </tr> 
         </thead>
         <tbody className="contractList">
-{/*           
-            {this.props.contracts.map((contract, key)=>{
-              let donateNo = contract.methods.listDonateNo()
-              //let donor = listDonateNo.donor
-                return(
-                    <tr key={key}>
-                    <th scope="row">{donateNo}</th> 
-                    {/* <th scope="row">{donor}</th> */}
-                    
-                
+          {
+            this.props.donations.map((donation, key)=>{
+              let status
+              if( donation.status == 0){
+                status = 'claimed'
+              }
+              else if(donation.status == 1){
+                status = 'transporting'
+              }
+              else if(donation.status == 2){
+                status = 'received'
+              }
+              else if(donation.status == 3){
+                status = 'cancelled due to overtime'
+              }
+              else if(donation.status == 4){
+                status = 'cancelled by donor'
+              }
 
-                
+              return(
+                  <tr key={key}>
+                  <th scope="row">{donation.donateNo.toString()}</th>
+                  <th scope="row">{donation.serialNo.toString()}</th>   
+                  <td>{donation.itemName}</td> 
+                  <td>{donation.donor}</td> 
+                  <td>{donation.amount.toString()} </td>
+                  <td>{donation.trackingNo}</td>
+                  <td>{status}</td>
+                 
+                </tr>
+              
+
+              )
+          })
+            
+          }
         </tbody>
         </table>
+
+
+
+
         <p>&nbsp;</p>
         <h2>Donate Item</h2>
         <table className="table">
