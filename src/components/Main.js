@@ -45,38 +45,7 @@ class Main extends Component {
         <button type="submit" className="btn btn-primary">Add Item</button>
         </form>
 
-        <h2>Update Tracking No.</h2>
-        <form onSubmit = 
-          {async (event) => {
-            event.preventDefault();
-            const donateNo = this.donateNo.value
-            const trackingNo = this.trackingNo.value;
-            await this.props.transportItem(donateNo, trackingNo)}
-          }>
-            
-        <div className="form-group mr-sm-2">
-            <input 
-            id="donateNo"
-            type="number"
-            ref={(input)=>{this.donateNo=input}}
-            className="form-control"
-            placeholder="Donate No."
-            required/>
-        </div>
-        
-
-        <div className="form-group mr-sm-2">
-            <input 
-            id="trackingNo"
-            type="text"
-            ref={(input)=>{this.trackingNo=input}}
-            className="form-control"
-            placeholder="tracking No"
-            required/>
-        </div>
-        <button type="submit" className="btn btn-primary">Confirm</button>
-        </form>
-
+      
         <p>&nbsp;</p>
         <h2>Donate Item</h2>
         <table className="table">

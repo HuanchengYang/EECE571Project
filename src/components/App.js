@@ -4,7 +4,7 @@ import logo from '../logo.png';
 import './App.css';
 import EthDonation from '../abis/EthDonation'
 import Addressbar from './Addressbar'
-import Main from './Main'
+import Main from './main'
 import { Route, Switch } from 'react-router-dom';
 import Donor from './donor'
 import Donee from './donee'
@@ -16,6 +16,7 @@ class App extends Component {
     totalNumber: 0,
     items: [],
     loading: true
+
   }
 
   async componentDidMount() {
@@ -46,6 +47,7 @@ class App extends Component {
     const networkData = EthDonation.networks[networkId];
     if (networkData) {
       const deployedEthDonation = new web3.eth.Contract(EthDonation.abi, networkData.address);
+      //const contractNum = await deployedEthDonation.methods.getNumofCampaigns().call();
       this.setState({ deployedEthDonation: deployedEthDonation });
       const serialNumber = await deployedEthDonation.methods.sn().call();
       console.log(serialNumber);
@@ -58,9 +60,11 @@ class App extends Component {
       }
       this.setState({ loading: false })
       console.log(this.state.items)
+
     } else {
       window.alert('EthDonation contract is not found in your blockchain.')
     }
+    
 
   }
 
@@ -104,7 +108,201 @@ class App extends Component {
     }
   }
 
-  createMoneyDonation
+  transportItem = async (donateNo, trackingNo) => {
+    this.setState({ loading: true })
+    try {
+      const gasAmount = await this.state.deployedEthDonation.methods.transportItem(donateNo, trackingNo).estimateGas({ from: this.state.account })
+
+      const receipt = this.state.deployedEthDonation.methods.transportItem(donateNo, trackingNo).send({ from: this.state.account })
+
+        .on('receipt', (receipt) => {
+          this.setState({ loading: false });
+          document.location.reload()
+        })
+        .on('error', console.error);
+    }
+    catch (error) {
+      // Catch any errors for any of the above operations.
+      alert(
+        error,
+      );
+      console.error(error);
+      document.location.reload()
+
+    }
+  }
+
+  receiveItem = async (donateNo) => {
+    this.setState({ loading: true })
+    try {
+      const gasAmount = await this.state.deployedEthDonation.methods.receiveItem(donateNo).estimateGas({ from: this.state.account })
+
+      const receipt = this.state.deployedEthDonation.methods.receiveItem(donateNo).send({ from: this.state.account })
+
+        .on('receipt', (receipt) => {
+          this.setState({ loading: false });
+          document.location.reload()
+        })
+        .on('error', console.error);
+    }
+    catch (error) {
+      // Catch any errors for any of the above operations.
+      alert(
+        error,
+      );
+      console.error(error);
+      document.location.reload()
+
+    }
+  }
+
+  cancelDonation = async (donateNo) => {
+    this.setState({ loading: true })
+    try {
+      const gasAmount = await this.state.deployedEthDonation.methods.cancelDonation(donateNo).estimateGas({ from: this.state.account })
+
+      const receipt = this.state.deployedEthDonation.methods.cancelDonation(donateNo).send({ from: this.state.account })
+
+        .on('receipt', (receipt) => {
+          this.setState({ loading: false });
+          document.location.reload()
+        })
+        .on('error', console.error);
+    }
+    catch (error) {
+      // Catch any errors for any of the above operations.
+      alert(
+        error,
+      );
+      console.error(error);
+      document.location.reload()
+
+    }
+  }
+
+  endDonation = async (serialNo) => {
+    this.setState({ loading: true })
+    try {
+      const gasAmount = await this.state.deployedEthDonation.methods.receiveItem(serialNo).estimateGas({ from: this.state.account })
+
+      const receipt = this.state.deployedEthDonation.methods.receiveItem(serialNo).send({ from: this.state.account })
+
+        .on('receipt', (receipt) => {
+          this.setState({ loading: false });
+          document.location.reload()
+        })
+        .on('error', console.error);
+    }
+    catch (error) {
+      // Catch any errors for any of the above operations.
+      alert(
+        error,
+      );
+      console.error(error);
+      document.location.reload()
+
+    }
+  }
+
+  listSerialNo = async (donee) => {
+    this.setState({ loading: true })
+    try {
+      const gasAmount = await this.state.deployedEthDonation.methods.listSerialNo(donee).estimateGas({ from: this.state.account })
+
+      const receipt = this.state.deployedEthDonation.methods.listSerialNo(donee).send({ from: this.state.account })
+
+        .on('receipt', (receipt) => {
+          this.setState({ loading: false });
+          document.location.reload()
+        })
+        .on('error', console.error);
+    }
+    catch (error) {
+      // Catch any errors for any of the above operations.
+      alert(
+        error,
+      );
+      console.error(error);
+      document.location.reload()
+
+    }
+  }
+
+  listDonateNo = async (donor) => {
+    this.setState({ loading: true })
+    try {
+      const gasAmount = await this.state.deployedEthDonation.methods.listDonateNo(donor).estimateGas({ from: this.state.account })
+
+      const receipt = this.state.deployedEthDonation.methods.listDonateNo(donor).send({ from: this.state.account })
+
+        .on('receipt', (receipt) => {
+          this.setState({ loading: false });
+          document.location.reload()
+        })
+        .on('error', console.error);
+    }
+    catch (error) {
+      // Catch any errors for any of the above operations.
+      alert(
+        error,
+      );
+      console.error(error);
+      document.location.reload()
+
+    }
+  }
+
+  doneeRecord = async (serialNo) => {
+    this.setState({ loading: true })
+    try {
+      const gasAmount = await this.state.deployedEthDonation.methods.doneeRecord(serialNo).estimateGas({ from: this.state.account })
+
+      const receipt = this.state.deployedEthDonation.methods.doneeRecord(serialNo).send({ from: this.state.account })
+
+        .on('receipt', (receipt) => {
+          this.setState({ loading: false });
+          document.location.reload()
+        })
+        .on('error', console.error);
+    }
+    catch (error) {
+      // Catch any errors for any of the above operations.
+      alert(
+        error,
+      );
+      console.error(error);
+      document.location.reload()
+
+    }
+  }
+
+  donorRecord = async (donateNo) => {
+    this.setState({ loading: true })
+    try {
+      const gasAmount = await this.state.deployedEthDonation.methods.donorRecord(donateNo).estimateGas({ from: this.state.account })
+
+      const receipt = this.state.deployedEthDonation.methods.donorRecord(donateNo).send({ from: this.state.account })
+
+        .on('receipt', (receipt) => {
+          this.setState({ loading: false });
+          document.location.reload()
+        })
+        .on('error', console.error);
+    }
+    catch (error) {
+      // Catch any errors for any of the above operations.
+      alert(
+        error,
+      );
+      console.error(error);
+      document.location.reload()
+
+    }
+  }
+
+
+
+
 
 
 
@@ -128,15 +326,57 @@ class App extends Component {
                     <Main items={this.state.items}
                       createItem={this.createItem}
                       donateItem={this.donateItem}
+                      transportItem={this.transportItem}
+                      receiveItem={this.receiveItem}
+                      cancelDonation={this.cancelDonation}
+                      endDonation={this.endDonation}
+                      listDonateNo={this.listDonateNo}
+                      listSerialNo={this.listSerialNo}
+                      doneeRecord={this.doneeRecord}
+                      donorRecord={this.donorRecord}
+
                     />
                   </Route>
                   <div>
 
-                    <Route path="/donor" component={Donor}>
+                    <Route path="/donor">
+                      <Donor
+                      contracts={this.state.deployedEthDonation}
+                      items={this.state.items}
+                      createItem={this.createItem}
+                      donateItem={this.donateItem}
+                      transportItem={this.transportItem}
+                      receiveItem={this.receiveItem}
+                      cancelDonation={this.cancelDonation}
+                      endDonation={this.endDonation}
+                      listDonateNo={this.listDonateNo}
+                      listSerialNo={this.listSerialNo}
+                      doneeRecord={this.doneeRecord}
+                      donorRecord={this.donorRecord}
+
+                      />
                     </Route>
 
-                    <Route path="/donee" component={Donee}>
+                    <Route path="/donee">
+                      <Donee
+                      contracts={this.deployedEthDonation}
+                      items={this.state.items}
+                      createItem={this.createItem}
+                      donateItem={this.donateItem}
+                      transportItem={this.transportItem}
+                      receiveItem={this.receiveItem}
+                      cancelDonation={this.cancelDonation}
+                      endDonation={this.endDonation}
+                      listDonateNo={this.listDonateNo}
+                      listSerialNo={this.listSerialNo}
+                      doneeRecord={this.doneeRecord}
+                      donorRecord={this.donorRecord}
+
+                      />
                     </Route>
+                  
+
+                    
                     <Route path="/moneydonation" component={MoneyDonation}>
                     </Route>
                   </div>
