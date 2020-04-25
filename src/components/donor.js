@@ -16,7 +16,8 @@ class Donor extends Component {
         <h1>donor</h1>
         <h2>Update Tracking No.</h2>
         <form onSubmit = 
-          {async (event) => {
+          {
+            async (event) => {
             event.preventDefault();
             const donateNo = this.state.donateNo;
             const trackingNo = this.trackingNo.value;

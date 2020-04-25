@@ -15,7 +15,8 @@ class Donee extends Component {
 
             <h2>Add Item</h2>
         <form onSubmit = 
-          {async (event) => {
+          {
+            async (event) => {
             event.preventDefault();
             const itemName = this.itemName.value
             const amount = this.amount.value;
