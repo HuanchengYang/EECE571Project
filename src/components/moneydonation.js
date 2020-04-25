@@ -14,6 +14,7 @@ class MoneyDonation extends Component {
         totalNumber: 0,
         contracts: [],
         loading: true,
+        contractNum: 0
       }
     
       async componentDidMount() {
@@ -49,10 +50,10 @@ class MoneyDonation extends Component {
           const contractNum = await deployedMoneyDonationPlatform.methods.getNumofCampaigns().call();
           console.log(contractNum);
           this.setState({ contractNum })
-          for (var i = 1; i <= contractNum; i++) {
+          for (var i = 0; i < contractNum; i++) {
              var contractaddress;
             try {
-            contractaddress = await deployedMoneyDonationPlatform.methods.getContract().call({from: this.state.account});
+            contractaddress = await deployedMoneyDonationPlatform.methods.getContractByNumber(i).call({from: this.state.account});
             } catch(e){
               console.log(e);
             }
@@ -75,6 +76,7 @@ class MoneyDonation extends Component {
 
       createContract = async (campaignName,campaignDescription,amount) => {
         this.setState({ loading: true })
+        try {
         const gasAmount = await this.state.deployedMoneyDonationPlatform.methods.newMoneyDonation(campaignName,campaignDescription,amount).estimateGas({ from: this.state.account })
         const result=await this.state.deployedMoneyDonationPlatform.methods.newMoneyDonation(campaignName,campaignDescription,amount).send({ from: this.state.account, gas: gasAmount })
           .once('receipt', (receipt) => {
@@ -84,9 +86,18 @@ class MoneyDonation extends Component {
             // //   items: [...this.state.items, item]});  
                        
             this.setState({ loading: false });
-            //document.location.reload()
+            document.location.reload()
           })
-          console.log(result);   
+          console.log(result);  
+        }catch (error) {
+          // Catch any errors for any of the above operations.
+          alert(
+            error,
+          );
+          console.error(error);
+          document.location.reload()
+    
+        } 
         
       }
 
@@ -106,6 +117,7 @@ class MoneyDonation extends Component {
                   <div><p className="text-center">Loading ...</p></div>
                   :
                       <MDresult contracts={this.state.contracts}
+                      totalcontract={this.state.contractNum}
                       createContract={this.createContract}
                         donateItem={this.donateItem}
                       />

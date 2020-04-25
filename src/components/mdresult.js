@@ -3,14 +3,27 @@ import React, { Component } from 'react';
 class MDresult extends Component {
   constructor(props) {
     super(props);
-    this.state = { donationAmount: 0 };
+    this.state = { totalcontract: 0 ,
+                    campaignName: ''};
   }
   myChangeHandler = (event) => {
-    this.setState({donationAmount: event.target.value});
+    this.setState({totalcontract: event.target.value});
+    
+  }
+
+  getInfo = async (mdcontract)=>{
+    var Name = await mdcontract.methods.getCampaignName().call();
+    var Description = await mdcontract.methods.getCampaignDescription().call();
+    var Amount = await mdcontract.methods.getRequiredAmount().call();
+
+    this.setState({campaignName: Name});
+    this.setState({campaignDescription: Description});
+    this.setState({campaignAmount: Amount});
+
+    
   }
 
 
-  
 
 
 
@@ -69,7 +82,8 @@ class MDresult extends Component {
           
         <thead id="contractList">
           <tr>
-            <th scope="col">#</th>
+            <th scope="col">Contract Address</th>
+            <th scope="col">Choose to Display Info</th>
             <th scope="col">Campaign Name</th>
             <th scope="col">Campaign Description</th>
             <th scope="col">Required Amount</th>
@@ -81,11 +95,34 @@ class MDresult extends Component {
         <tbody id="contractList">
           
             {this.props.contracts.map((mdcontract, key)=>{
-              let Name = mdcontract.methods.getCampaignName()
+              
                 return(
                     <tr key={key}>
-                    <th scope="row">{mdcontract.options.address}</th>   
-                    
+                    <th scope="row">{mdcontract.options.address}</th>
+                    <td>
+                      {
+                          
+                          <form id="donate"
+                          onSubmit = 
+                          {async (event) => {
+                            event.preventDefault();
+                            await this.getInfo(mdcontract);
+                          }
+                          }>
+
+                          <button type="submit" className="btn btn-primary">Display Contract Info</button>
+                          </form>
+                        }
+                    </td>
+                    <td>
+                      {this.state.campaignName}
+                    </td>
+                    <td>
+                      {this.state.campaignDescription}
+                    </td><td>
+                      {this.state.campaignAmount}
+                    </td>
+
                   </tr>
                 
 

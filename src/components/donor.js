@@ -7,6 +7,7 @@ class Donor extends Component {
   }
   myChangeHandler = (event) => {
     this.setState({donationAmount: event.target.value});
+    this.setState({donateNo: event.target.value});
   }
 
   render() {
@@ -18,7 +19,7 @@ class Donor extends Component {
           {
             async (event) => {
             event.preventDefault();
-            const donateNo = this.donateNo.value
+            const donateNo = this.state.donateNo;
             const trackingNo = this.trackingNo.value;
             await this.props.transportItem(donateNo, trackingNo)}
           }>
@@ -30,6 +31,7 @@ class Donor extends Component {
             ref={(input)=>{this.donateNo=input}}
             className="form-control"
             placeholder="Donate No."
+            onChange={this.myChangeHandler}
             required/>
         </div>
         
@@ -61,6 +63,7 @@ class Donor extends Component {
             ref={(input)=>{this.donateNo=input}}
             className="form-control"
             placeholder="Donate No."
+            onChange={this.myChangeHandler}
             required/>
         </div>
         
