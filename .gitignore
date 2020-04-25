@@ -3,7 +3,7 @@
 # dependencies
 /node_modules
 /Vue-drizzle Dapp/node_modules
-
+/Vue-drizzle Dapp/my-web/node_modules
 # testing
 /coverage
 
