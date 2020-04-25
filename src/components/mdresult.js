@@ -15,10 +15,13 @@ class MDresult extends Component {
     var Name = await mdcontract.methods.getCampaignName().call();
     var Description = await mdcontract.methods.getCampaignDescription().call();
     var Amount = await mdcontract.methods.getRequiredAmount().call();
+    var Creator = await mdcontract.methods.getCampaignCreatorAddress().call();
 
     this.setState({campaignName: Name});
     this.setState({campaignDescription: Description});
     this.setState({campaignAmount: Amount});
+    this.setState({creator: Creator});
+    this.setState({contract: mdcontract});
 
     
   }
@@ -121,6 +124,8 @@ class MDresult extends Component {
                       {this.state.campaignDescription}
                     </td><td>
                       {this.state.campaignAmount}
+                    </td><td>
+                      {this.state.creator}
                     </td>
 
                   </tr>
@@ -130,6 +135,53 @@ class MDresult extends Component {
             })}
         </tbody>
         </table>
+
+        <h2>Donate Money</h2>
+        <form onSubmit = 
+          {async (event) => {
+            event.preventDefault();
+            const mdcontractdonated=this.state.contract;
+            const donorName = this.donorName.value;
+            const donorMessage = this.donorMessage.value;
+            const amount2 = this.amount2.value;
+            await this.props.donateMoney(mdcontractdonated,donorName,donorMessage,amount2)}
+          }>
+            
+        <div className="form-group mr-sm-3">
+            <input 
+            id="donorName"
+            type="text"
+            ref={(input)=>{this.donorName=input}}
+            className="form-control"
+            placeholder="Donor Name"
+            required/>
+        </div>
+
+        <div className="form-group mr-sm-4">
+            <input 
+            id="donorMessage"
+            type="text"
+            ref={(input)=>{this.donorMessage=input}}
+            className="form-control"
+            placeholder="Donor's Message"
+            required/>
+        </div>
+        
+
+
+        <div className="form-group mr-sm-5">
+            <input 
+            id="amount2"
+            type="number"
+            ref={(input)=>{this.amount2=input}}
+            className="form-control"
+            placeholder="Amount Donated"
+            required/>
+        </div>
+        {/* <button type="submit" className="btn btn-primary">Donate Money</button> */}
+        </form>
+
+
       </div>
     );
   }

@@ -75,10 +75,11 @@ class MoneyDonation extends Component {
     
 
       createContract = async (campaignName,campaignDescription,amount) => {
+        const web3 = window.web3;
         this.setState({ loading: true })
         try {
-        const gasAmount = await this.state.deployedMoneyDonationPlatform.methods.newMoneyDonation(campaignName,campaignDescription,amount).estimateGas({ from: this.state.account })
-        const result=await this.state.deployedMoneyDonationPlatform.methods.newMoneyDonation(campaignName,campaignDescription,amount).send({ from: this.state.account, gas: gasAmount })
+        const gasAmount = await this.state.deployedMoneyDonationPlatform.methods.newMoneyDonation(campaignName,campaignDescription,web3.utils.toWei(amount)).estimateGas({ from: this.state.account })
+        const result=await this.state.deployedMoneyDonationPlatform.methods.newMoneyDonation(campaignName,campaignDescription,web3.utils.toWei(amount)).send({ from: this.state.account, gas: gasAmount })
           .once('receipt', (receipt) => {
             // const serialNumber = this.state.deployedEthDonation.methods.sn().call();
             // const item = this.state.deployedEthDonation.methods.items(serialNumber).call();
@@ -96,6 +97,35 @@ class MoneyDonation extends Component {
           );
           console.error(error);
           document.location.reload()
+    
+        } 
+        
+      }
+
+      donateMoney = async (contract,donorName,donorMessage,amount) => {
+        const web3 = window.web3;
+        this.setState({ loading: true });
+        console.log(contract);
+        try {
+        const gasAmount = await contract.methods.donateMoney(donorName,donorMessage,web3.utils.toWei(amount)).estimateGas({ from: this.state.account })
+        const result=await contract.methods.donateMoney(donorName,donorMessage,web3.utils.toWei(amount)).send({ from: this.state.account, gas: gasAmount, value:amount })
+          .once('receipt', (receipt) => {
+            // const serialNumber = this.state.deployedEthDonation.methods.sn().call();
+            // const item = this.state.deployedEthDonation.methods.items(serialNumber).call();
+            // // this.setState({
+            // //   items: [...this.state.items, item]});  
+                       
+            this.setState({ loading: false });
+            document.location.reload()
+          })
+          console.log(result);  
+        }catch (error) {
+          // Catch any errors for any of the above operations.
+          //alert(
+            //error,
+          //);
+          console.error(error);
+          //document.location.reload()
     
         } 
         
@@ -119,7 +149,7 @@ class MoneyDonation extends Component {
                       <MDresult contracts={this.state.contracts}
                       totalcontract={this.state.contractNum}
                       createContract={this.createContract}
-                        donateItem={this.donateItem}
+                      donateMoney={this.donateMoney}
                       />
                     
   
