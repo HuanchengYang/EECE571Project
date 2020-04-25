@@ -209,8 +209,6 @@ contract EthDonation {
 
         itemRecord.push(items[_serialNo]);
         donationRecord.push(donations[_donateNo]);
-
-
     }
 
     function cancelDonation(uint _donateNo) public {
